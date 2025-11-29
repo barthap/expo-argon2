@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["ExpoArgon2Module"]
+  },
+  "android": {
+    "modules": ["expo.community.modules.argon2.ExpoArgon2Module"]
+  }
+}
