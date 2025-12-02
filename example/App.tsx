@@ -1,37 +1,50 @@
-import { useEvent } from 'expo';
-import ExpoArgon2, { ExpoArgon2View } from 'expo-argon2';
-import { Button, SafeAreaView, ScrollView, Text, View } from 'react-native';
+import React from 'react';
+import Argon2, { Argon2Result } from 'expo-argon2';
+import { Alert, Button, SafeAreaView, ScrollView, Text, TextInput, View } from 'react-native';
+
+const SALT = 'pepper12';
 
 export default function App() {
-  const onChangePayload = useEvent(ExpoArgon2, 'onChange');
+  const [password, setPassword] = React.useState('');
+  const [result, setResult] = React.useState<Argon2Result | null>(null);
+
+  const hashArgon2 = async () => {
+    try {
+      const result = await Argon2.hashAsync(password, SALT, {
+        // memory: 512,
+      });
+      setResult(result);
+    } catch (e) {
+      console.warn('Argon2 failed:', e);
+      Alert.alert("Argon2 failed", "Error: " + (getMessageForException(e) ?? 'Unknown error'));
+    }
+  }
 
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={styles.container}>
         <Text style={styles.header}>Module API Example</Text>
-        <Group name="Constants">
-          <Text>{ExpoArgon2.PI}</Text>
-        </Group>
-        <Group name="Functions">
-          <Text>{ExpoArgon2.hello()}</Text>
-        </Group>
-        <Group name="Async functions">
-          <Button
-            title="Set value"
-            onPress={async () => {
-              await ExpoArgon2.setValueAsync('Hello from JS!');
-            }}
+        <Group name="Password input">
+          <Text>Password:</Text>
+          <TextInput
+            editable
+            value={password}
+            onChangeText={setPassword}
+            style={styles.passwordInput}
+            placeholder="Password"
+            secureTextEntry
           />
         </Group>
-        <Group name="Events">
-          <Text>{onChangePayload?.value}</Text>
+        <Group name="Argon2 hash">
+          <Button title="Hash" onPress={hashArgon2} />
         </Group>
-        <Group name="Views">
-          <ExpoArgon2View
-            url="https://www.example.com"
-            onLoad={({ nativeEvent: { url } }) => console.log(`Loaded: ${url}`)}
-            style={styles.view}
-          />
+        <Group name="Result">
+          <Text>
+            Raw hash: {result?.rawHash ?? '[none]'}
+          </Text>
+          <Text style={{ marginTop: 4 }}>
+            Encoded hash: {result?.encodedHash ?? '[none]'}
+          </Text>
         </Group>
       </ScrollView>
     </SafeAreaView>
@@ -45,6 +58,24 @@ function Group(props: { name: string; children: React.ReactNode }) {
       {props.children}
     </View>
   );
+}
+
+function getMessageForException(e: unknown): string | null {
+  if (e instanceof Error) {
+    return e.message;
+  }
+  if (typeof e === 'string') {
+    return e;
+  }
+
+  if (!e || typeof e !== 'object') {
+    return null;
+  }
+  if ('toString' in e && typeof e['toString'] === 'function') {
+    return e.toString();
+  }
+
+  return null;
 }
 
 const styles = {
@@ -69,5 +100,13 @@ const styles = {
   view: {
     flex: 1,
     height: 200,
+  },
+  passwordInput: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 10,
+    borderColor: 'gray',
   },
 };
