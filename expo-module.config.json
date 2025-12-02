@@ -1,9 +1,16 @@
 {
-  "platforms": ["apple", "android", "web"],
+  "platforms": [
+    "apple",
+    "android"
+  ],
   "apple": {
-    "modules": ["ExpoArgon2Module"]
+    "modules": [
+      "ExpoArgon2Module"
+    ]
   },
   "android": {
-    "modules": ["expo.community.modules.argon2.ExpoArgon2Module"]
+    "modules": [
+      "expo.community.modules.argon2.ExpoArgon2Module"
+    ]
   }
 }
