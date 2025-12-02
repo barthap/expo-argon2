@@ -1,50 +1,91 @@
 package expo.community.modules.argon2
 
+import com.lambdapioneer.argon2kt.Argon2Kt
+import com.lambdapioneer.argon2kt.Argon2KtResult
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import java.net.URL
+import expo.modules.kotlin.records.Field
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
+
+
+enum class SaltEncoding(val encoding: String) : Enumerable {
+  HEX("hex"),
+  UTF8("utf8")
+}
+
+enum class Argon2Mode(val mode: String) : Enumerable {
+  ARGON2_I("argon2i"),
+  ARGON2_D("argon2d"),
+  ARGON2_ID("argon2id");
+
+  fun getArgon2Mode(): com.lambdapioneer.argon2kt.Argon2Mode =
+    when (this) {
+      ARGON2_I -> com.lambdapioneer.argon2kt.Argon2Mode.ARGON2_I
+      ARGON2_D -> com.lambdapioneer.argon2kt.Argon2Mode.ARGON2_D
+      ARGON2_ID -> com.lambdapioneer.argon2kt.Argon2Mode.ARGON2_ID
+    }
+}
+
+class Argon2Config: Record {
+  @Field
+  val iterations: Int = 2
+
+  @Field
+  val memory: Int = 32 * 1024
+
+  @Field
+  val parallelism: Int = 1
+
+  @Field
+  val hashLength: Int = 32
+
+  @Field
+  val saltEncoding: SaltEncoding = SaltEncoding.UTF8
+
+  @Field
+  val mode: Argon2Mode = Argon2Mode.ARGON2_ID
+}
 
 class ExpoArgon2Module : Module() {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
+  private val argon2Kt: Argon2Kt by lazy { Argon2Kt() }
+
+  @OptIn(ExperimentalStdlibApi::class)
   override fun definition() = ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ExpoArgon2')` in JavaScript.
     Name("ExpoArgon2")
 
-    // Defines constant property on the module.
-    Constant("PI") {
-      Math.PI
-    }
+    AsyncFunction("hashStringAsync") { password: String, salt: String, config: Argon2Config ->
+      try {
+        val passwordBytes: ByteArray = password.toByteArray(Charsets.UTF_8)
 
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
+        val saltBytes: ByteArray = when (config.saltEncoding) {
+          SaltEncoding.UTF8 -> salt.toByteArray(Charsets.UTF_8)
+          SaltEncoding.HEX -> salt
+            .lowercase()
+            .substringAfter("0x")
+            .hexToByteArray(HexFormat.Default)
+        }
 
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      "Hello world! 👋"
-    }
+        val hashResult: Argon2KtResult = argon2Kt.hash(
+          config.mode.getArgon2Mode(),
+          passwordBytes,
+          saltBytes,
+          config.iterations,
+          config.memory,
+          config.parallelism,
+          config.hashLength
+        )
+        val rawHash = hashResult.rawHashAsHexadecimal(false)
+        val encodedHash = hashResult.encodedOutputAsString()
 
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { value: String ->
-      // Send an event to JavaScript.
-      sendEvent("onChange", mapOf(
-        "value" to value
-      ))
-    }
-
-    // Enables the module to be used as a native view. Definition components that are accepted as part of
-    // the view definition: Prop, Events.
-    View(ExpoArgon2View::class) {
-      // Defines a setter for the `url` prop.
-      Prop("url") { view: ExpoArgon2View, url: URL ->
-        view.webView.loadUrl(url.toString())
+        return@AsyncFunction mapOf(
+          "rawHash" to rawHash,
+          "encodedHash" to encodedHash
+        )
+      } catch (exception: Exception) {
+        throw CodedException("Failed to generate argon2 hash: ${exception.message}", exception)
       }
-      // Defines an event that the view can send to JavaScript.
-      Events("onLoad")
     }
   }
 }

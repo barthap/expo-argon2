@@ -1,7 +1,10 @@
 apply plugin: 'com.android.library'
 
+import groovy.json.JsonSlurper
+def packageJson = new JsonSlurper().parse(new File('..', 'package.json'))
+
 group = 'expo.community.modules.argon2'
-version = '0.1.0'
+version = packageJson.version
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -35,9 +38,13 @@ android {
   namespace "expo.community.modules.argon2"
   defaultConfig {
     versionCode 1
-    versionName "0.1.0"
+    versionName packageJson.version
   }
   lintOptions {
     abortOnError false
   }
+}
+
+dependencies {
+  implementation 'com.lambdapioneer.argon2kt:argon2kt:1.6.0'
 }
