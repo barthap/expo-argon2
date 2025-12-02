@@ -19,6 +19,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
+  s.dependency 'Argon2Swift', '~> 1.0'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
