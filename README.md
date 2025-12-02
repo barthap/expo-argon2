@@ -16,7 +16,7 @@ Argon2 implementation for React Native and Expo.
 npx expo install expo-argon2
 ```
 
-- ✅ You can use this library in [bare React Native apps](https://docs.expo.dev/bare/installing-expo-modules//).
+- ✅ You can use this library in [bare React Native apps](https://docs.expo.dev/bare/installing-expo-modules/).
 - ✅ You can use this library with [Expo Development Builds](https://docs.expo.dev/development/introduction/).
 - ❌ This library can't be used in the "Expo Go" app because it [requires custom native code](https://docs.expo.dev/workflow/customizing/).
 
