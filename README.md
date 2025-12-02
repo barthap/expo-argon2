@@ -57,7 +57,7 @@ Hashes given password with Argon2, utilizing the given salt as well as optionall
 
 - `password` - The password to hash
 
-- `salt` - The salt to use with Argon2 as the salt in the hashing operation. Can be either a string, or hex-encoded bytes _(configurable via the `config` param)_. Minimum salt length is 8 bytes.
+- `salt` - The salt to use with Argon2 as the salt in the hashing operation. Can be either a string, base64, or hex-encoded bytes _(configurable via the `config` param)_. Minimum salt length is 8 bytes.
 - `config` - An object of type `Argon2Config`. Optional configuration of the hashing operation.
 
 **Returns:** An object of type `Argon2Result`, containing both `rawHash` and `encodedHash` versions of the hash.
@@ -107,7 +107,7 @@ Configuration of the hashing algorithm. An object containing the following prope
   <tr>
     <td><code>saltEncoding</code></td>
     <td><code>SaltEncoding</code> (enum)</td>
-    <td>Format of the <code>salt</code> input argument. Can be hex-encoded bytes or utf8-encoded string.</td>
+    <td>Format of the <code>salt</code> input argument. Can be base64, hex-encoded bytes, or utf8-encoded string.</td>
     <td>❌</td>
     <td><code>SaltEncoding.UTF8</code></td>
   </tr>
@@ -134,10 +134,11 @@ An enum consisting of the following variants:
 
 An enum consisting of the following variants:
 
-| name   | value    |
-| ------ | -------- |
-| `UTF8` | `"utf8"` |
-| `HEX`  | `"hex"`  |
+| name     | value      |
+| -------- | ---------- |
+| `UTF8`   | `"utf8"`   |
+| `HEX`    | `"hex"`    |
+| `BASE64` | `"base64"` |
 
 ### `Argon2Result`
 

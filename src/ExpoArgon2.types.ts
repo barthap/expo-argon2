@@ -1,6 +1,7 @@
 export enum SaltEncoding {
   UTF8 = "utf8",
   HEX = "hex",
+  BASE64 = "base64",
 }
 
 export enum Argon2Mode {

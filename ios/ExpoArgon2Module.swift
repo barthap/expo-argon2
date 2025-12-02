@@ -4,6 +4,7 @@ import Argon2Swift
 enum SaltEncoding: String, Enumerable {
     case hex
     case utf8
+    case base64
 }
 
 enum Argon2Mode: String, Enumerable {
@@ -50,6 +51,7 @@ public class ExpoArgon2Module: Module {
       AsyncFunction("hashStringAsync") { (password: String, salt: String, config: Argon2Config) in
           let saltData: Data? = switch config.saltEncoding {
           case .hex: Data(hexEncoded: salt)
+          case .base64: Data(base64Encoded: salt)
           case .utf8: salt.data(using: .utf8)
           }
           

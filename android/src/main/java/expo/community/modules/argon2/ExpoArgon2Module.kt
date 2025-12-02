@@ -1,5 +1,6 @@
 package expo.community.modules.argon2
 
+import android.util.Base64
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
 import expo.modules.kotlin.exception.CodedException
@@ -12,7 +13,8 @@ import expo.modules.kotlin.types.Enumerable
 
 enum class SaltEncoding(val encoding: String) : Enumerable {
   HEX("hex"),
-  UTF8("utf8")
+  UTF8("utf8"),
+  BASE64("base64")
 }
 
 enum class Argon2Mode(val mode: String) : Enumerable {
@@ -61,6 +63,7 @@ class ExpoArgon2Module : Module() {
 
         val saltBytes: ByteArray = when (config.saltEncoding) {
           SaltEncoding.UTF8 -> salt.toByteArray(Charsets.UTF_8)
+          SaltEncoding.BASE64 -> Base64.decode(salt, Base64.NO_WRAP)
           SaltEncoding.HEX -> salt
             .lowercase()
             .substringAfter("0x")

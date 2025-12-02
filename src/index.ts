@@ -21,7 +21,9 @@ export async function hashAsync(
   const saltByteLength = config.saltEncoding === SaltEncoding.HEX
     // in hex, 1 byte is encoded by 2 characters
     ? salt.length / 2
-    : salt.length;
+    : config.saltEncoding === SaltEncoding.BASE64
+      ? Math.floor(salt.length / 4) * 3
+      : salt.length;
 
   if (saltByteLength < 8) {
     throw new Error("Argon2: Salt must be at least 8 bytes long")
