@@ -1,3 +1,5 @@
+export type PasswordInput = string | ArrayBuffer | ArrayBufferView;
+
 export enum SaltEncoding {
   UTF8 = "utf8",
   HEX = "hex",

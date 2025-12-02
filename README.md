@@ -49,13 +49,17 @@ import { hashAsync } from "expo-argon2";
 
 ---
 
-### `hashAsync(password: string, salt: string, config?: Argon2Config): Promise<Argon2Result>`
+### `hashAsync(password: PasswordInput, salt: string, config?: Argon2Config): Promise<Argon2Result>`
 
 Hashes given password with Argon2, utilizing the given salt as well as optionally the specific parameters of the hashing operation itself.
 
 **Arguments:**
 
-- `password` - The password to hash
+- `password` - The password to hash. Can be either string or byte array.
+
+  ```ts
+  type PasswordInput = string | ArrayBuffer | Uint8Array;
+  ```
 
 - `salt` - The salt to use with Argon2 as the salt in the hashing operation. Can be either a string, base64, or hex-encoded bytes _(configurable via the `config` param)_. Minimum salt length is 8 bytes.
 - `config` - An object of type `Argon2Config`. Optional configuration of the hashing operation.

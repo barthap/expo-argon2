@@ -3,11 +3,15 @@ package expo.community.modules.argon2
 import android.util.Base64
 import com.lambdapioneer.argon2kt.Argon2Kt
 import com.lambdapioneer.argon2kt.Argon2KtResult
+import expo.modules.core.errors.InvalidArgumentException
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Either
 import expo.modules.kotlin.types.Enumerable
 
 
@@ -53,13 +57,17 @@ class Argon2Config: Record {
 class ExpoArgon2Module : Module() {
   private val argon2Kt: Argon2Kt by lazy { Argon2Kt() }
 
-  @OptIn(ExperimentalStdlibApi::class)
+  @OptIn(ExperimentalStdlibApi::class, EitherType::class)
   override fun definition() = ModuleDefinition {
     Name("ExpoArgon2")
 
-    AsyncFunction("hashStringAsync") { password: String, salt: String, config: Argon2Config ->
+    AsyncFunction("hashAsync") { password: Either<String, ByteArray>, salt: String, config: Argon2Config ->
       try {
-        val passwordBytes: ByteArray = password.toByteArray(Charsets.UTF_8)
+        val passwordBytes: ByteArray = when {
+          password.`is`(String::class) -> password.get(String::class).toByteArray(Charsets.UTF_8)
+          password.`is`(ByteArray::class) -> password.get(ByteArray::class)
+          else -> throw Exceptions.IllegalArgument("Invalid password data format")
+        }
 
         val saltBytes: ByteArray = when (config.saltEncoding) {
           SaltEncoding.UTF8 -> salt.toByteArray(Charsets.UTF_8)

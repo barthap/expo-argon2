@@ -48,7 +48,7 @@ public class ExpoArgon2Module: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoArgon2")
 
-      AsyncFunction("hashStringAsync") { (password: String, salt: String, config: Argon2Config) in
+      AsyncFunction("hashAsync") { (password: Either<String, Data>, salt: String, config: Argon2Config) in
           let saltData: Data? = switch config.saltEncoding {
           case .hex: Data(hexEncoded: salt)
           case .base64: Data(base64Encoded: salt)
@@ -61,8 +61,8 @@ public class ExpoArgon2Module: Module {
           let saltObject = Salt(bytes: validSaltData)
           
           do {
-              // Generate hash using Argon2Swift
-              let result = try Argon2Swift.hashPasswordString(
+            let result = if let password: String = password.get() {
+              try Argon2Swift.hashPasswordString(
                 password: password,
                 salt: saltObject,
                 iterations: config.iterations,
@@ -71,8 +71,20 @@ public class ExpoArgon2Module: Module {
                 length: config.hashLength,
                 type: config.mode.getArgon2Mode(),
               )
+            } else if let password: Data = password.get() {
+              try Argon2Swift.hashPasswordBytes(
+                password: password,
+                salt: saltObject,
+                iterations: config.iterations,
+                memory: config.memory,
+                parallelism: config.parallelism,
+                length: config.hashLength,
+                type: config.mode.getArgon2Mode(),
+              )
+            } else {
+              throw InvalidDataFormatException()
+            }
               
-              // Get encoded and raw hash values
               let encodedHash = result.encodedString()
               let rawHash = result.hexString()
               
@@ -110,6 +122,12 @@ final class InvalidSaltFormatException : Exception, @unchecked Sendable {
     override var reason: String {
         "Invalid salt format"
     }
+}
+
+final class InvalidDataFormatException : Exception, @unchecked Sendable {
+  override var reason: String {
+    "Invalid password data format"
+  }
 }
 
 final class Argon2FailedException : GenericException<String>, @unchecked Sendable {
