@@ -1,11 +1,9 @@
 import { NativeModule, requireNativeModule } from 'expo';
 
-import { ExpoArgon2ModuleEvents } from './ExpoArgon2.types';
+import { Argon2Config, Argon2Result } from './ExpoArgon2.types';
 
-declare class ExpoArgon2Module extends NativeModule<ExpoArgon2ModuleEvents> {
-  PI: number;
-  hello(): string;
-  setValueAsync(value: string): Promise<void>;
+declare class ExpoArgon2Module extends NativeModule {
+  hashStringAsync(password: string, salt: string, config: Argon2Config): Promise<Argon2Result>;
 }
 
 // This call loads the native module object from the JSI.

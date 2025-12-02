@@ -1,14 +1,10 @@
 import { registerWebModule, NativeModule } from 'expo';
 
-import { ExpoArgon2ModuleEvents } from './ExpoArgon2.types';
+import { Argon2Result } from './ExpoArgon2.types';
 
-class ExpoArgon2Module extends NativeModule<ExpoArgon2ModuleEvents> {
-  PI = Math.PI;
-  async setValueAsync(value: string): Promise<void> {
-    this.emit('onChange', { value });
-  }
-  hello() {
-    return 'Hello world! 👋';
+class ExpoArgon2Module extends NativeModule {
+  async hashAsync(): Promise<Argon2Result> {
+    throw new Error("Argon2.hashAsync is not available on webj")
   }
 }
 
