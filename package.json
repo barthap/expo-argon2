@@ -1,6 +1,6 @@
 {
   "name": "expo-argon2",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Argon2 implementation for React Native",
   "main": "build/index.js",
   "types": "build/index.d.ts",
