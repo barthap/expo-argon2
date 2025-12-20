@@ -1,5 +1,8 @@
 # Expo Argon2
 
+> [!NOTE]
+> This package has not yet been published to npm! See the **[Alternatives](#alternatives)** section for published alternatives.
+
 Argon2 implementation for React Native and Expo.
 
 [Argon2](https://en.wikipedia.org/wiki/Argon2) is a cryptographic hashing algorithm, most recommended for password hashing.
@@ -13,7 +16,7 @@ Argon2 implementation for React Native and Expo.
 ## Installation
 
 ```
-npx expo install expo-argon2
+npx expo install @barthap/expo-argon2
 ```
 
 - ✅ You can use this library in [bare React Native apps](https://docs.expo.dev/bare/installing-expo-modules/).
@@ -23,7 +26,7 @@ npx expo install expo-argon2
 ## Usage
 
 ```ts
-import Argon2 from "expo-argon2";
+import Argon2 from "@barthap/expo-argon2";
 
 // ...
 const password: string = "secretpasswd";
@@ -42,9 +45,9 @@ Also see the [example app](./example/App.tsx).
 ## API
 
 ```js
-import Argon2 from "expo-argon2";
+import Argon2 from "@barthap/expo-argon2";
 // or directly
-import { hashAsync } from "expo-argon2";
+import { hashAsync } from "@barthap/expo-argon2";
 ```
 
 ---
@@ -155,7 +158,8 @@ Result of the hashing. Contains the following properties:
 
 ## Alternatives
 
-- **[react-native-argon2](https://github.com/poowf/react-native-argon2)** - offers the same functionality. Might be better if you're not using Expo and looking for something minimal. `expo-argon2` API is designed to be almost a drop-in replacement.
+- **[react-native-argon2](https://github.com/poowf/react-native-argon2)** - offers the same functionality. Might be better if you're not using Expo and looking for something minimal. `@barthap/expo-argon2` API is designed to be almost a drop-in replacement.
+- **[expo-argon2](https://github.com/shinobu-uwu/expo-argon2/tree/main)** - even simpler alternative, also Expo-based.
 
 ## Under the hood
 

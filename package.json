@@ -1,5 +1,5 @@
 {
-  "name": "expo-argon2",
+  "name": "@barthap/expo-argon2",
   "version": "0.0.1",
   "description": "Argon2 implementation for React Native",
   "main": "build/index.js",
